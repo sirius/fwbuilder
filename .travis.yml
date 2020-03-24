@@ -14,17 +14,7 @@ matrix:
     - os: linux
       env:
         - VM=ubuntu
-        - TAG=16.04
-    - os: linux
-      env:
-        - VM=ubuntu
         - TAG=18.04
-    - os: linux
-      env: 
-        - VM=mxe
-        - TAG=qt-5.12
-    - os: osx
-      compiler: clang
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then

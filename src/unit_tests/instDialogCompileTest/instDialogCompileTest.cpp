@@ -262,8 +262,11 @@ void instDialogCompileTest::testCompile()
         QVERIFY(waited < 10000);
     }
 
+    qDebug() << dlg->findChild<QTextBrowser*>("procLogDisplay")->toPlainText();
+
     for(int i=0; i<list->topLevelItemCount(); i++)
     {
+        qDebug() << list->topLevelItem(i)->text(1);
         QVERIFY(list->topLevelItem(i)->text(1).contains("Success"));
     }
 
