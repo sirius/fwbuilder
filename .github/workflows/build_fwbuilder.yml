@@ -1,0 +1,66 @@
+name: fwbuilder build matrix
+
+on: [push]
+
+jobs:
+  test_linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {
+              name: "Ubuntu 20.04",
+              docker_image: "fwbuilder/ubuntu:20.04",
+              unit_tests: true
+            }
+          - {
+              name: "Ubuntu 18.04",
+              docker_image: "fwbuilder/ubuntu:18.04",
+              unit_tests: true
+            }
+          - {
+              name: "Ubuntu 16.04",
+              docker_image: "fwbuilder/ubuntu:16.04",
+              unit_tests: false
+            }
+    container:
+      image: ${{ matrix.config.docker_image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: |
+          make -j$(nproc)
+          make install
+      - name: Run unit tests
+        if: ${{ matrix.config.unit_tests == true }}
+        run: |
+          QT_QPA_PLATFORM=vnc ctest --verbose
+          
+  test_mxe_w32:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {
+              name: "MXE Qt 5.12",
+              docker_image: "fwbuilder/mxe:qt-5.12",
+              unit_tests: false
+            }
+    container:
+      image: ${{ matrix.config.docker_image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure
+        run: |
+          export PATH=$PATH:/opt/mxe/usr/bin
+          mkdir -p build && cd build
+          i686-w64-mingw32.shared-cmake ..
+      - name: Build
+        run: |
+          make -j$(nproc)
