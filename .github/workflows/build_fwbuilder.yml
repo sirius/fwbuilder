@@ -34,11 +34,13 @@ jobs:
           cmake .. -DCMAKE_BUILD_TYPE=Debug
       - name: Build
         run: |
+          cd build
           make -j$(nproc)
           make install
       - name: Run unit tests
         if: ${{ matrix.config.unit_tests == true }}
         run: |
+          cd build
           QT_QPA_PLATFORM=vnc ctest --verbose
           
   test_mxe_w32:
@@ -63,4 +65,6 @@ jobs:
           i686-w64-mingw32.shared-cmake ..
       - name: Build
         run: |
+          export PATH=$PATH:/opt/mxe/usr/bin
+          cd build
           make -j$(nproc)
