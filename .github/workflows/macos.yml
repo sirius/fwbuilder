@@ -1,17 +1,24 @@
-name: fwbuilder build macOS
+name: macOS
 
 on: [push]
 
 jobs:
-  test_macos:
+  release-build:
     runs-on: macos-10.15
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          brew install qt net-snmp
+          brew install qt net-snmp ccache
           brew upgrade openssl cmake
+      - name: Compilation cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-ccache
       - name: Configure
         run: |
           export PATH="/usr/local/opt/qt/bin:/usr/local/opt/net-snmp/bin:$PATH"
